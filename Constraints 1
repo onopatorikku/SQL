@@ -1,0 +1,39 @@
+-- Simple Warehouse database including cohesion constraints.
+-- Tables order is important.
+
+CREATE TABLE Customers(
+    Cus_number INTEGER(8),
+    Name VARCHAR2(25) NOT NULL,
+    Fam_name VARCHAR2(25) NOT NULL,
+    Address VARCHAR2(50) NOT NULL,
+    Phone VARCHAR2(11),
+    Email VARCHAR2(25),
+    PRIMARY KEY (Cus_number)
+);
+
+CREATE TABLE Warehouse(
+    Prod_number INTEGER(8),
+    Shelf_number INTEGER(5),
+    Prod_ammount INTEGER(8) CONSTRAINT Prod_amm_ck
+	Check (Prod_ammount >= 0),
+    Prod_name VARCHAR2(25) NOT NULL,
+    Price INTEGER(8) CONSTRAINT Price_ck
+	Check (Price > 0),
+    PRIMARY KEY (Prod_number)
+);
+
+CREATE TABLE Orders(
+    Ord_number INTEGER(8),
+    Priority NUMBER(1) NOT NULL,
+    Prod_number INTEGER(8),
+    Ord_ammount INTEGER(8) CONSTRAINT Ord_ammount_ck
+	Check (Ord_ammount > 0),	
+    Ord_by VARCHAR2(25)
+       CONSTRAINT Ord_fk REFERENCES Customers(Cus_number),
+    Ord_date DATE DEFAULT Sysdate,
+    PRIMARY KEY (Ord_number)  
+);
+
+ALTER TABLE Orders
+ADD CONSTRAINT Prod_number_fk
+FOREIGN KEY (Prod_number) REFERENCES Warehouse
